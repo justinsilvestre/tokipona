@@ -1,0 +1,1 @@
+PREPOSITIONS = %w'lon sama tan tawa'

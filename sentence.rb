@@ -69,4 +69,12 @@ class Sentence
 			@clause = Clause.new without_vocative_or_emphatic
 		end
 	end
+
+	def subject
+		clause.subject
+	end
+
+	def predicate
+		clause.predicates
+	end
 end

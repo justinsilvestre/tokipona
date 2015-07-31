@@ -21,4 +21,10 @@ module Fixtures
 		@mi_optative = Clause.new %W'mi o sona e ale'
 	end
 
+	def prepare_substantives
+		@many_good_people = Substantive.new %w'jan pona mute'
+		@very_good_person = Substantive.new %w'jan pi pona mute'
+		@person = Substantive.new %w'jan'
+	end
+
 end
