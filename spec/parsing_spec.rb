@@ -1,29 +1,14 @@
 require 'spec_helper'
 
-
-
-describe 'the sentence-parsing process', type: :feature do
-	before :each do 
-		samples = [
-			'kalama a!',
-			'tenpo ni la jan Mawijo li kama lon lupa, li jo e soweli lili tu.',
-			'Sili li pilin pona, li uta e jan Mawijo.',
-			'ona li seli e soweli e pan.',
-			'moku pona!'
-		]
-
-		parsings = [
-			{has_emphatic: true},
-			{context: ''},
-			{},
-			{},
-			{}
-		]
-		
+describe Parsing do
+	before :each do
+		@kalama_sili = Parsing.new 'kalama a! tenpo ni la jan Mawijo li kama lon lupa, li jo e soweli lili tu. Sili li pilin pona, li uta e jan Mawijo. ona li seli e soweli e pan. suno li lon kon, taso mi wile e ni: tenpo pimeja. moku pona!'
 	end
 
-	it 'parses phrases properly according to their grammatical role'
-
+	describe '#sentences' do
+		it 'gives array of sentences' do
+			expect(@kalama_sili.sentences).to all(be_instance_of Sentence)
+			expect(@kalama_sili.sentences.first.original_text).to eq 'kalama a!' 
+		end
 	end
 end
-

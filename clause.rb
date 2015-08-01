@@ -3,8 +3,16 @@ require_relative 'predicate'
 
 class Clause
 	attr_accessor :words
-	def initialize(original)
+	def initialize(original, options={})
 		self.words = original
+	end
+
+	def is_context?
+		words.last == 'la'
+	end
+
+	def final_index
+		is_context? ? -2 : -1
 	end
 
 	def mood
@@ -17,11 +25,8 @@ class Clause
 
 	def subject
 		return @subject if defined? @subject
-		if words.include? 'o'
-			@modal_particle = 'o'
-			@subject = Subject.new words[0...words.index('o')]
-		elsif words.include? 'li'
-			@subject = Subject.new words[0...words.index('li')]
+		if (words.include? 'o') || (words.include? 'li')
+			@subject = Subject.new words[0...words.index(modal_particle)]
 		elsif %w'mi sina'.include? words.first
 			@subject = Subject.new([ words.first ])
 		else
@@ -29,32 +34,9 @@ class Clause
 		end
 	end
 
-	def predicate_delimiters
-		return @delimiters if defined? @delimiters
-		@delimiters = []
-		@delimiters << 1 if ([['mi'],['sina']].include? subject.words)
-		words.each_with_index do |word, i|
-			@delimiters << i if word == modal_particle
-		end
-		@delimiters
-	end
-
-	def predicates
-		return @predicates if defined? @predicates
-		@predicates = []
-		if subject.nil?
-			add_predicate words
-		else
-			predicate_delimiters.length.times do |i|
-				start = predicate_delimiters[i]
-				finish = predicate_delimiters[i+1].nil? ? -1 : predicate_delimiters[i+1]
-				add_predicate words[start..finish]
-			end
-		end
-		@predicates
-	end
-
-	def add_predicate(new_words)
-		@predicates << Predicate.new(new_words, self)
+	def predicate
+		return @predicate if defined? @predicate
+		predicate_words = subject.nil? ? words : words[subject.words.length..final_index]
+		@predicate = Predicate.new(predicate_words, self)
 	end
 end

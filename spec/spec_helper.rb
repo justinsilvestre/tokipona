@@ -1,4 +1,4 @@
-require_relative '../sentence'
+require_relative '../parsing'
 require 'yaml'
 
 module Fixtures
@@ -19,12 +19,15 @@ module Fixtures
 		@mi_clause = Clause.new %W'mi wile moku e kili'
 		@sina_clause = Clause.new %W'sina sona ala e ona'
 		@mi_optative = Clause.new %W'mi o sona e ale'
+		@compound_predicate = Clause.new %w'jan o pona mute o ike lili'
 	end
 
 	def prepare_substantives
 		@many_good_people = Substantive.new %w'jan pona mute'
 		@very_good_person = Substantive.new %w'jan pi pona mute'
 		@person = Substantive.new %w'jan'
+		@transitive = Substantive.new(%w'moku e telo')
+		@compound_objects = Substantive.new(%w'lukin e kasi e soweli lili')
 	end
 
 end

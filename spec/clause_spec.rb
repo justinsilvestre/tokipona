@@ -21,9 +21,9 @@ describe Clause do
 		end
 	end
 
-	describe '#predicates' do
-		it 'points to array of predicate objects' do
-			expect(@full_clause.predicates).to all(be_instance_of Predicate)
+	describe '#predicate' do
+		it 'points to predicate of clause' do
+			expect(@full_clause.predicate).to be_instance_of Predicate
 		end
 	end
 end

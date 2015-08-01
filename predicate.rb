@@ -7,20 +7,16 @@ class Predicate
 		@clause = clause
 	end
 
-	def transitive?
-		words.include? 'e'
-	end
-
-	def direct_objects
-		return @direct_objects if defined? @direct_objects
-		if transitive?
-			@direct_objects = words.join(' ').split(' e ')[1..-1].map do |object_string|
-				Substantive.new(object_string.split)
-			end
-		else
-			@direct_objects = nil
+	def components
+		return @components if defined? @components
+		@components = []
+		without_first_particle = words.first == clause.modal_particle ? words[1..-1] : words
+		@components = without_first_particle.join(' ').split(" #{clause.modal_particle} ").map do |component_text|
+			Substantive.new component_text.split
 		end
 	end
 
-
+	def [](i)
+		components[i]
+	end
 end

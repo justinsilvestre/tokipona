@@ -14,7 +14,7 @@ describe Subject do
 
 	describe '#components' do
 		it 'gives array of substantives' do
-			expect(@compound_subject.components).to all(be_instance_of Substantive)
+			expect(@compound_subject.components).to all(be_a Substantive)
 		end
 	end
 

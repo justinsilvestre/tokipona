@@ -26,33 +26,33 @@ class Sentence
 		@emphatic =  last_word == 'a' || last_word == 'kin' ? [last_word] : nil
 	end
 
-	def without_emphatic
-		return @without_emphatic if defined? @without_emphatic
-		@without_emphatic ||= emphatic.nil? ? words : formatted.gsub(/\sa$|\skin$/, '').split
+	def without_periphery
+		return @without_periphery if defined? @without_periphery
+		@without_periphery ||= formatted.match(/\sa$|\skin$|^taso/).nil? ? words : formatted.gsub(/\sa$|\skin$|^taso/, '').split
 	end
 
 	def vocative
 		return @vocative if defined? @vocative
-		has_vocative = (without_emphatic[-1] == 'o') || (original_text.match /\so[,:]/)
+		has_vocative = (without_periphery[-1] == 'o') || (original_text.match /\so[,:]/)
 		@vocative = has_vocative ? Vocative.new(words[0..words.index('o')]) : nil
 	end
 
-	def without_vocative_or_emphatic
-		return @without_vocative_or_emphatic if defined? @without_vocative_or_emphatic
-		@without_vocative_or_emphatic = vocative.nil? ? without_emphatic : without_emphatic[1+words.index('o')..-1]
+	def without_vocative_or_periphery
+		return @without_vocative_or_periphery if defined? @without_vocative_or_periphery
+		@without_vocative_or_periphery = vocative.nil? ? without_periphery : without_periphery[1+words.index('o')..-1]
 	end
 
 	def context
 		return @context if defined? @context
-		chunk = without_vocative_or_emphatic
+		chunk = without_vocative_or_periphery
 		@context = chunk.include?('la') ?
-			Context.new(chunk[0..chunk.index('la')]) : nil
+			Clause.new(chunk[0..chunk.index('la')]) : nil
 	end
 
 	def question_tag
 		return @question_tag if defined? @question_tag
 		question_tag = %w'anu seme'
-		if without_vocative_or_emphatic[-2..-1] == question_tag
+		if without_vocative_or_periphery[-2..-1] == question_tag
 			@question_tag = question_tag
 		else
 			@question_tag = nil
@@ -62,11 +62,11 @@ class Sentence
 	def clause
 		return @clause if defined? @clause
 		if !context.nil?
-			@clause = Clause.new without_vocative_or_emphatic[without_emphatic.index('la')+1..-1]
-		elsif without_vocative_or_emphatic.empty?
+			@clause = Clause.new without_vocative_or_periphery[without_periphery.index('la')+1..-1]
+		elsif without_vocative_or_periphery.empty?
 			@clause = nil
 		else
-			@clause = Clause.new without_vocative_or_emphatic
+			@clause = Clause.new without_vocative_or_periphery
 		end
 	end
 
@@ -75,6 +75,33 @@ class Sentence
 	end
 
 	def predicate
-		clause.predicates
+		clause.predicate
+	end
+
+	def end_punctuation
+		original_text.match(/[^a-zA-Z]*$/)[0]
+	end
+
+	def analysis
+		@analysis = {}
+		analysis[:vocative] = vocative.analysis if vocative
+		analysis[:context] = context.analysis if context
+		analysis[:subject] = subject.analysis unless clause.subject.nil?
+		analysis[:predicate] = predicate.analysis
+		analysis[:emphatic] = emphatic unless emphatic.nil?
+		analysis[:taso] = 'taso' if original_text.match(/^taso/)
+		@analysis
+	end
+
+	def color_analysis
+		@color = {}
+		@color[:taso] = 'taso' if original_text.match(/^taso/)
+		@color[:vocative] = vocative.words.join(' ') if vocative
+		@color[:context] = context.words.join(' ') if context
+		@color[:subject] = subject.words if subject
+		@color[:predicate] = predicate.words
+		@color[:emphatic] = emphatic if emphatic
+		@color[:end_punctuation] = end_punctuation
+		@color
 	end
 end

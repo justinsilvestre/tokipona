@@ -7,11 +7,11 @@ describe Sentence do
 		prepare_sentences
 	end
 
-	describe '#without_emphatic' do
-		it "gives sentence without emphatic particle" do
-			expect(@emphatic.without_emphatic).to eq %W'toki pona li toki pona'
-			expect(@emphatic2.without_emphatic).to eq %W'mi olin e sina'
-			expect(@normal.without_emphatic).to eq @normal.words
+	describe '#without_periphery' do
+		it "gives sentence without emphatic particle or taso" do
+			expect(@emphatic.without_periphery).to eq %W'toki pona li toki pona'
+			expect(@emphatic2.without_periphery).to eq %W'mi olin e sina'
+			expect(@normal.without_periphery).to eq @normal.words
 		end
 	end
 
@@ -21,15 +21,15 @@ describe Sentence do
 		end
 	end
 
-	describe '#without_vocative_or_emphatic' do
-		it "gives sentence without vocative expression or emphatic particle" do
-			expect(@vocative2.without_vocative_or_emphatic).to eq %W'mi olin e sina'
+	describe '#without_vocative_or_periphery' do
+		it "gives sentence without vocative expression or periphery particles" do
+			expect(@vocative2.without_vocative_or_periphery).to eq %W'mi olin e sina'
 		end
 	end
 
 	describe "#context" do
-		it 'points to Context object if sentence has context' do
-			expect(@context.context).to be_instance_of Context
+		it 'points to context if sentence has context' do
+			expect(@context.context).to be
 		end
 	end
 
