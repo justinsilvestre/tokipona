@@ -8,19 +8,24 @@ class Subject
 
 	def conjunction
 		return @conjunction if defined? @conjunction
-		if words.include? 'en'
-			@conjunction = 'en'
-		end
+		@conjunction = words.include?('en') ? 'en' : nil
 	end
 
 	def components
 		return @components if defined? @components
-		if !conjunction.nil?
+		if conjunction
 			@components = words.join(' ').split(' en ').map do |component_string|
 				Substantive.new(component_string.split)
 			end
 		else
 			@components = [Substantive.new(words)]
 		end
+	end
+
+	def analysis
+		@analysis = {}
+		@analysis[:components] = components.map(&:analysis)
+		@analysis[:conjunction] = conjunction if conjunction
+		@analysis
 	end
 end

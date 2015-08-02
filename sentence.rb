@@ -9,7 +9,7 @@ class Sentence
 
 	def initialize(text)
 		@original_text = text
-		# later, throw error if more than one occurence of o
+		# later, throw error if more than one occurence of o etc.
 	end
 
 	def formatted
@@ -23,7 +23,7 @@ class Sentence
 	def emphatic
 		return @emphatic if defined? @emphatic
 		last_word = words[-1]
-		@emphatic =  last_word == 'a' || last_word == 'kin' ? [last_word] : nil
+		@emphatic =  last_word == 'a' || last_word == 'kin' ? last_word : nil
 	end
 
 	def without_periphery
@@ -82,14 +82,20 @@ class Sentence
 		original_text.match(/[^a-zA-Z]*$/)[0]
 	end
 
+	def mood
+		clause.mood
+	end
+
 	def analysis
 		@analysis = {}
-		analysis[:vocative] = vocative.analysis if vocative
-		analysis[:context] = context.analysis if context
-		analysis[:subject] = subject.analysis unless clause.subject.nil?
-		analysis[:predicate] = predicate.analysis
-		analysis[:emphatic] = emphatic unless emphatic.nil?
-		analysis[:taso] = 'taso' if original_text.match(/^taso/)
+		@analysis[:vocative] = vocative.analysis if vocative
+		@analysis[:context] = context.analysis if context
+		@analysis[:subject] = subject.analysis if subject
+		@analysis[:predicate] = predicate.analysis
+		@analysis[:emphatic] = emphatic if emphatic
+		@analysis[:taso] = 'taso' if original_text.match(/^\s*taso/)
+		@analysis[:end_punctuation] = end_punctuation
+		@analysis[:mood] = mood
 		@analysis
 	end
 

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Context do
 
 	before :each do
-		@tenpo = Context.new %w'tenpo pini la'
+		@tenpo = Clause.new %w'tenpo pini la'
 	end
 
 	describe '#words' do

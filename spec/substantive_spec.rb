@@ -5,8 +5,6 @@ describe Substantive do
 	before :each do
 		prepare_substantives
 		prepare_clauses
-		@preverbal = Substantive.new(%w'awen lukin e kon')
-		@prepositional = Substantive.new(%w'lon supa noka mi')
 	end
 
 	describe '#simple?' do

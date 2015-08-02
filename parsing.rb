@@ -11,11 +11,10 @@ class Parsing
 	def sentences
 		return @sentences if defined? @sentences
 		sentences = original_text.split(/([!?\.,:])/).each_slice(2).map(&:join)
-		sentences.each_with_index do |sentence, i|
-			if sentence.match(/,$/) and !sentences[i+1].strip.match(/^taso/)
-				sentence = sentence + sentences[i+1]
-				sentences.delete_at i+1
-			end
+		i = 0
+		while i < sentences.length do 
+			sentences[i] = sentences[i] + sentences.delete_at(i+1) if (sentences[i].match /,$/) and !(sentences[i+1].strip.match /^taso/)
+			i += 1
 		end
 		@sentences = sentences.map do |sen|
 			Sentence.new sen.strip
@@ -24,6 +23,10 @@ class Parsing
 
 	def analysis
 		@analysis ||= sentences.map(&:analysis)
+	end
+
+	def json
+		analysis.to_json
 	end
 
 	def color_analysis

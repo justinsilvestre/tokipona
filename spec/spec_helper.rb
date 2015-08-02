@@ -28,6 +28,10 @@ module Fixtures
 		@person = Substantive.new %w'jan'
 		@transitive = Substantive.new(%w'moku e telo')
 		@compound_objects = Substantive.new(%w'lukin e kasi e soweli lili')
+		@preverbal = Substantive.new %w'awen lukin e kon' 
+		@prepositional = Substantive.new %w'lon supa noka mi'
+		@simple_substantive = Substantive.new %w'pona'
+		@very_good_big_person = Substantive.new %w'jan suli pi pona mute'
 	end
 
 end

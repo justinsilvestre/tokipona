@@ -37,6 +37,12 @@ class Clause
 	def predicate
 		return @predicate if defined? @predicate
 		predicate_words = subject.nil? ? words : words[subject.words.length..final_index]
-		@predicate = Predicate.new(predicate_words, self)
+		@predicate = Predicate.new predicate_words, modal_particle
+	end
+
+	def analysis
+		@analysis = {}
+		@analysis[:subject] = subject.analysis if subject
+		@analysis[:predicate] = predicate.analysis
 	end
 end
