@@ -1,8 +1,12 @@
 require_relative 'word_classes'
+require_relative 'substantive_components'
 
 class Substantive
+	include SubstantiveComponents
+
 	attr_reader :words
 	attr_reader :antecedent
+
 	def initialize(original, options={})
 		@words = original
 
@@ -12,108 +16,120 @@ class Substantive
 		end
 	end
 
-	def simple?
-		words.length == 1
-	end
-
-	def preverbal?
-		!simple? and (PREVERBS.include? words.first) and words[1] != 'e'
-	end
-
-	def gerundive
-		return @gerundive if defined? @gerundive
-		if preverbal?
-			@gerundive = Substantive.new words[1..-1]
-		else
-			@gerundive = nil
-		end
-	end
-
-	def prepositional?
-		!simple? and !transitive? and (PREPOSITIONS.include? words.first)
-	end
-
-	def prepositional_object
-		return @prepositional_object if defined? @prepositional_object
-		if prepositional?
-			@prepositional_object = Substantive.new words[1..-1]
-		else
-			@prepositional_object = nil
-		end
-	end
-
-	def without_direct_object
-		return @without_direct_object if defined? @without_direct_object
-		@without_direct_object = !transitive? ? words : words[0..words.index('e')-1]
+	def head_and_complements
+		@head_and_complements = words
 	end
 
 	def has_complements?
-		true if !preverbal? && !prepositional? && (without_direct_object.length > 1)
+		(head_and_complements.length > 1) ? true : false
+	end
+
+	def negative?
+		(words[1] == 'ala') && !interrogative?
+	end
+
+	def interrogative?
+		(words.first == words[2]) && (words[1] == 'ala') 
+	end
+
+	def after_head
+		return 3 if interrogative?
+		return 2 if negative?
+		1
+	end
+
+	def prepositional_complement_head
+		head_and_complements[after_head..-1].find { |word| PREPOSITIONS.include? word }
 	end
 
 	def final_complement_index
 		return nil unless has_complements?
-		if without_direct_object.include?('pi')
-			-1 * (without_direct_object.length - without_direct_object.index('pi'))
+		if head_and_complements.include?('pi')
+			head_and_complements.index('pi')
+		elsif prepositional_complement_head
+			head_and_complements.index(prepositional_complement_head)
 		else
-			without_direct_object.length - 1
+			-1
 		end
 	end
 
-	# must fix this so it recognizes prepositional phrase as single complement
+	# fix so only initial 'pi' is rejected
 	def complements
 		return @complements if defined? @complements
 		if has_complements?
 			@complements = []
-			words[1...final_complement_index].each do |word|
-				add_complement [word]
+			unless final_complement_index == after_head
+				head_and_complements[after_head...final_complement_index].each { |w| add_complement [w] unless w == 'pi' }
 			end
-			add_complement(without_direct_object[final_complement_index..-1].reject{|w| w=='pi'})
+			add_complement(head_and_complements[final_complement_index..-1].reject{|w| w=='pi'})
 		else
 			@complements = nil
 		end
 	end
 
-	def head
-		return @head if defined? @head
-		if simple?
-			@head = self
-		else
-			@head = Substantive.new [words.first]
-		end
-	end
-
 	def add_complement(new_words)
-		@complements << Substantive.new(new_words, antecedent: self.head)
-	end
-
-	def transitive?
-		!preverbal? and words.include?('e')
-	end
-
-	def direct_objects
-		return @direct_objects if defined? @direct_objects
-		if transitive?
-			@direct_objects = words.join(' ').split(' e ')[1..-1].map do |object_string|
-				Substantive.new(object_string.split)
-			end
-		else
-			@direct_objects = nil
-		end
+		@complements << new_component(new_words, antecedent: self)
 	end
 
 	# I'm thinking maybe it would make sense to merge together gerundive, p.o. and d.o. into 'object'
 	def analysis
-		return (@analysis = words.first) if simple?
-		@analysis = { head: head.analysis }
+		@analysis = { head: words.first }
+		@analysis[:interrogative] = true if interrogative?
+		@analysis[:negative] = true if negative?
 		@analysis[:complements] = complements.map(&:analysis) if has_complements?
-		if preverbal?
-			@analysis[:gerundive] = gerundive.analysis
-		elsif prepositional?
-			@analysis[:prepositional_object] = prepositional_object.analysis
-		elsif transitive?
-			@analysis[:direct_objects] = direct_objects.map(&:analysis)
-		end
 		@analysis
 	end
 end
+
+
+class Preverbal < Substantive
+	def has_complements?
+		false
+	end
+
+	def gerundive
+		@gerundive ||= new_component words[1..-1]
+	end
+
+	def analysis
+		super
+		@analysis[:gerundive] = gerundive.analysis
+		@analysis
+	end
+end
+
+
+class Prepositional < Substantive
+	def has_complements?
+		false
+	end
+
+	def prepositional_object
+		@prepositional_object ||= new_component words[1..-1]
+	end
+
+	def analysis
+		super
+		@analysis[:prepositional_object] = prepositional_object.analysis
+		@analysis
+	end
+end
+
+class Transitive < Substantive
+	def head_and_complements
+		@head_and_complements ||= words[0...words.index('e')]
+	end
+
+	def direct_objects
+		@direct_objects ||= words.join(' ').split(' e ')[1..-1].map do |object_string|
+			new_component(object_string.split)
+		end
+	end
+
+	def analysis
+		super
+		@analysis[:direct_objects] = direct_objects.map(&:analysis)
+		@analysis
+	end
+end
+

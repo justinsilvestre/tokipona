@@ -11,6 +11,10 @@ class Clause
 		words.last == 'la'
 	end
 
+	def initial_index
+		subject.nil? ? 0 : subject.words.length
+	end
+
 	def final_index
 		is_context? ? -2 : -1
 	end
@@ -25,7 +29,7 @@ class Clause
 
 	def subject
 		return @subject if defined? @subject
-		if (words.include? 'o') || (words.include? 'li')
+		if (words.include?('o') && (words.first != 'o')) || (words.include? 'li')
 			@subject = Subject.new words[0...words.index(modal_particle)]
 		elsif %w'mi sina'.include? words.first
 			@subject = Subject.new([ words.first ])
@@ -36,13 +40,13 @@ class Clause
 
 	def predicate
 		return @predicate if defined? @predicate
-		predicate_words = subject.nil? ? words : words[subject.words.length..final_index]
-		@predicate = Predicate.new predicate_words, modal_particle
+		@predicate = Predicate.new words[initial_index..final_index], modal_particle
 	end
 
 	def analysis
 		@analysis = {}
 		@analysis[:subject] = subject.analysis if subject
 		@analysis[:predicate] = predicate.analysis
+		@analysis
 	end
 end

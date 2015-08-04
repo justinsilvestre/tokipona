@@ -1,4 +1,6 @@
 class Predicate
+	include SubstantiveComponents
+
 	attr_reader :words
 	attr_reader :clause
 	attr_reader :modal_particle
@@ -13,7 +15,7 @@ class Predicate
 		@components = []
 		without_first_particle = words.first == modal_particle ? words[1..-1] : words
 		@components = without_first_particle.join(' ').split(" #{modal_particle} ").map do |component_text|
-			Substantive.new component_text.split
+			new_component component_text.split, is_predicate: true
 		end
 	end
 

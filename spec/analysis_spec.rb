@@ -9,6 +9,7 @@ describe 'the sentence-analyzing process', type: :feature do
 		@sili = Sentence.new 'Sili li pilin pona, li uta e jan Mawijo.'
 		@ona_li = Sentence.new 'ona li seli e soweli e pan.'
 		@moku_pona = Sentence.new 'moku pona!'
+		@snake = Sentence.new 'akesi li toki tawa sina la o pana ala kin e wile pi pona tawa akesi ni.'
 		prepare_substantives
 	end
 
@@ -18,6 +19,46 @@ describe 'the sentence-analyzing process', type: :feature do
 		expect(@tenpo_ni.context.words).to eq %w'tenpo ni la'
 		expect(@tenpo_ni.subject.words).to eq %w'jan Mawijo'
 		expect(@tenpo_ni.predicate.words).to eq %w'li kama lon lupa li jo e soweli lili tu'
+	end
+
+	it 'parses a context with subject and predicate' do
+		expect(@snake.context.subject.components.first.words).to eq %w'akesi'
+		expect(@snake.context.predicate.components.first.words).to eq %w'toki tawa sina'
+	end
+
+	# still have to fix prepositional phrase parsing
+	# also stop that null subject from being instantiated for optative
+	it 'analyzes context with subject' do
+		expect(@snake.analysis[:context]).to eq(
+			subject: { components: [{head: 'akesi'}] },
+			predicate: [{
+				head: 'toki',
+				complements: [{
+					head:'tawa',
+					prepositional_object: {head:'sina'}
+				}]
+			}]
+		)
+	end
+	it 'analyzes complex predicate' do
+		expect(@snake.analysis[:predicate]).to eq [{
+			head: 'pana',
+			negative: true,
+			complements: heads(%w'kin'),
+			direct_objects: [{
+				head: 'wile',
+				complements: [{
+					head: 'pona',
+					complements: [{
+						head:'tawa',
+						prepositional_object: {
+							head: 'akesi',
+							complements: [{ head:'ni' }]
+						}
+					}]
+				}]
+			}]
+		}]
 	end
 
 
@@ -39,32 +80,35 @@ describe 'the sentence-analyzing process', type: :feature do
 	end
 
 	it 'parses a simple predicate' do
-		expect(@kalama.predicate.analysis).to eq %w'kalama'
+		expect(@kalama.predicate.analysis).to eq [{ head: 'kalama' }]
 	end
 
 	it 'parses a transitive predicate' do
-		expect(@ona_li.predicate.analysis).to eq([{ head: 'seli', direct_objects: %w'soweli pan' }])
+		expect(@ona_li.predicate.analysis).to eq([{
+			head: 'seli',
+			direct_objects: heads(%w'soweli pan')
+		}])
 	end
 
 	it 'parses a compound predicate' do
 		expect(@tenpo_ni.predicate.analysis).to eq [
-			{ head: 'kama', gerundive: {head: 'lon', prepositional_object: 'lupa'} },
-			{ head: 'jo', direct_objects: [{ head: 'soweli', complements: %w'lili tu' }] }
+			{ head: 'kama', gerundive: { head: 'lon', prepositional_object: {head:'lupa'} } },
+			{ head: 'jo', direct_objects: [{ head: 'soweli', complements: heads(%w'lili tu') }] }
 		]
 	end
 
 	it 'parses a simple subject' do
-		expect(@sili.subject.analysis).to eq(components: ['Sili'])
+		expect(@sili.subject.analysis).to eq(components: [{head:'Sili'}])
 	end
 
 	it 'parses a subject with complements' do
-		expect(@tenpo_ni.subject.analysis).to eq(components: [{head: 'jan', complements: ['Mawijo']}])
+		expect(@tenpo_ni.subject.analysis).to eq(components: [{head: 'jan', complements: heads(%w'Mawijo')}])
 	end
 
 	it 'parses a whole sentence' do
 		expect(@ona_li.analysis).to eq(
-			subject: { components: ["ona"] },
-			predicate: [{ head: "seli", direct_objects: ["soweli", "pan"]}],
+			subject: { components: [{head:"ona"}] },
+			predicate: [{ head: "seli", direct_objects: heads(%w'soweli pan') }],
 			end_punctuation: ".",
 			mood: :indicative
 		)

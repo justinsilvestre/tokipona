@@ -28,14 +28,4 @@ class Parsing
 	def json
 		analysis.to_json
 	end
-
-	def color_analysis
-		sentences.map do |sentence|
-			sentence.color_analysis
-		end
-	end
-
-	def color_json
-		color_analysis.to_json
-	end
 end

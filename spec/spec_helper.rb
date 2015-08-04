@@ -26,12 +26,18 @@ module Fixtures
 		@many_good_people = Substantive.new %w'jan pona mute'
 		@very_good_person = Substantive.new %w'jan pi pona mute'
 		@person = Substantive.new %w'jan'
-		@transitive = Substantive.new(%w'moku e telo')
-		@compound_objects = Substantive.new(%w'lukin e kasi e soweli lili')
-		@preverbal = Substantive.new %w'awen lukin e kon' 
-		@prepositional = Substantive.new %w'lon supa noka mi'
+		@transitive = Transitive.new %w'moku e telo', is_predicate: true
+		@compound_objects = Transitive.new %w'lukin e kasi e soweli lili', is_predicate: true
+		@preverbal = Preverbal.new %w'awen lukin e kon', is_predicate: true
+		@prepositional = Prepositional.new %w'lon supa noka mi'
 		@simple_substantive = Substantive.new %w'pona'
 		@very_good_big_person = Substantive.new %w'jan suli pi pona mute'
+	end
+
+	def heads(strings)
+		strings.map do |string|
+			{ head: string }
+		end
 	end
 
 end
