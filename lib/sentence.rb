@@ -82,7 +82,11 @@ class Sentence
 	end
 
 	def mood
-		clause.mood
+		if clause
+			clause.mood
+		else
+			nil
+		end
 	end
 
 	def taso

@@ -5,7 +5,7 @@ class Vocative
 	end
 
 	def substantive
-		@substantive ||= Substantive.new(words[0..-1])
+		@substantive ||= Substantive.new(words[0..1])
 	end
 
 	def analysis

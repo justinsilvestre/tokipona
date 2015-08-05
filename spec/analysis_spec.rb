@@ -16,7 +16,17 @@ describe 'the sentence-analyzing process', type: :feature do
 		@kenla = Sentence.new 'ken la jan li ken moku e ona e ona weka telo kin.'
 		@lon_ala = Sentence.new 'sewi li lon ala!'
 		@wile_ala = Sentence.new 'mi mute li wile ala.'
+		@jan_mute = Sentence.new 'jan mute o'
 		prepare_substantives
+	end
+
+	it 'analyzes a simple vocative sentence' do
+		expect(@jan_mute.analysis).to eq({
+			vocative: {
+				head: 'jan', complements: [{head: 'mute'}]
+			},
+			end_punctuation: ""
+		});
 	end
 
 	it 'parses context, subject and predicate' do
