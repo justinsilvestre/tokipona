@@ -5,20 +5,32 @@ class Parsing
 	attr_reader :original_text
 
 	def initialize(text)
-		@original_text = text
+		@original_text = text.gsub(/[^a-zA-Z\s!\?\.,:;]/,'')
 	end
 
 	def sentences
 		return @sentences if defined? @sentences
-		sentences = original_text.split(/([!?\.,:])/).each_slice(2).map(&:join)
-		i = 0
-		while i < sentences.length do 
-			sentences[i] = sentences[i] + sentences.delete_at(i+1) if (sentences[i].match /,$/) and !(sentences[i+1].strip.match /^taso/)
-			i += 1
+		raw_sentences = original_text.clone
+		@sentences = []
+		chunk_regex = /[^!\?\.,:]+[!\?\.,:]*^*/
+
+		# properly, should check for taso after vocative (maybe...)
+		while raw_sentences.match /[a-zA-Z]+/ do
+			chunk = raw_sentences.slice!(chunk_regex)
+			break if !chunk
+			if !(@sentences.empty?) && (@sentences[-1].match(/,[a-zA-Z]*$/))
+				if (chunk.match(/^[^a-zA-Z]taso/))
+					@sentences << chunk.strip
+				else
+					@sentences[-1] = @sentences[-1] + chunk 
+				end
+			else
+				@sentences << chunk.strip
+			end
+			# if delimiter of last is comma and current
+			# chunk does not begin with taso, add current chunk to last chunk
 		end
-		@sentences = sentences.map do |sen|
-			Sentence.new sen.strip
-		end
+		@sentences = @sentences.map { |s| Sentence.new s }
 	end
 
 	def analysis

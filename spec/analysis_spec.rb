@@ -10,6 +10,10 @@ describe 'the sentence-analyzing process', type: :feature do
 		@ona_li = Sentence.new 'ona li seli e soweli e pan.'
 		@moku_pona = Sentence.new 'moku pona!'
 		@snake = Sentence.new 'akesi li toki tawa sina la o pana ala kin e wile pi pona tawa akesi ni.'
+		@triple_predicate = Sentence.new 'soweli lili li pona mute tawa mi li kiwen ala li olin e mama ona'
+		@nimi = Sentence.new 'o nimi pi mi mute li kama suli!'
+		@negative = Sentence.new 'mi wile ala e ni.'
+		@kenla = Sentence.new 'ken la jan li ken moku e ona e ona weka telo kin.'
 		prepare_substantives
 	end
 
@@ -26,8 +30,10 @@ describe 'the sentence-analyzing process', type: :feature do
 		expect(@snake.context.predicate.components.first.words).to eq %w'toki tawa sina'
 	end
 
-	# still have to fix prepositional phrase parsing
-	# also stop that null subject from being instantiated for optative
+	it 'parses a null subject' do
+		expect(@nimi.subject).to be_nil
+	end
+
 	it 'analyzes context with subject' do
 		expect(@snake.analysis[:context]).to eq(
 			subject: { components: [{head: 'akesi'}] },
@@ -65,6 +71,16 @@ describe 'the sentence-analyzing process', type: :feature do
 	it 'parses each individual predicate in sentence with compound predicate' do
 		expect(@sili.predicate.components.first.words).to eq %w'pilin pona'
 		expect(@sili.predicate.components.last.words).to eq %w'uta e jan Mawijo'
+		expect(@triple_predicate.predicate.components.map(&:words)).to eq [
+			%w'pona mute tawa mi',
+			%w'kiwen ala',
+			%w'olin e mama ona'
+		]
+	end
+
+	it 'parses a negative substantive without extra complements' do
+		expect(@negative.predicate.components.length).to eq 1
+		expect(@negative.predicate.components[0].complements).to be_nil
 	end
 
 	it 'parses a substantive phrase with simple complements' do
@@ -88,6 +104,10 @@ describe 'the sentence-analyzing process', type: :feature do
 			head: 'seli',
 			direct_objects: heads(%w'soweli pan')
 		}])
+	end
+
+	it 'parses a transitive gerundive' do
+		expect(@kenla.predicate.components.first.gerundive.has_complements?).to eq false
 	end
 
 	it 'parses a compound predicate' do

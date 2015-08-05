@@ -1,5 +1,7 @@
 require_relative 'substantive'
 class Subject
+	include SubstantiveComponents
+
 	attr_accessor :words
 
 	def initialize(original)
@@ -15,10 +17,10 @@ class Subject
 		return @components if defined? @components
 		if conjunction
 			@components = words.join(' ').split(' en ').map do |component_string|
-				Substantive.new(component_string.split)
+				new_component component_string.split
 			end
 		else
-			@components = [Substantive.new(words)]
+			@components = [new_component(words)]
 		end
 	end
 

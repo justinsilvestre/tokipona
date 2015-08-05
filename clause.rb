@@ -2,6 +2,7 @@ require_relative 'subject'
 require_relative 'predicate'
 
 class Clause
+
 	attr_accessor :words
 	def initialize(original, options={})
 		self.words = original
@@ -29,10 +30,13 @@ class Clause
 
 	def subject
 		return @subject if defined? @subject
-		if (words.include?('o') && (words.first != 'o')) || (words.include? 'li')
-			@subject = Subject.new words[0...words.index(modal_particle)]
+		if words.include? 'o'
+			i = words.index 'o'
+			@subject = i == 0 ? nil : Subject.new(words[0...i]) 
+		elsif words.include? 'li'
+			@subject = Subject.new words[0...words.index('li')]
 		elsif %w'mi sina'.include? words.first
-			@subject = Subject.new([ words.first ])
+			@subject = Subject.new [words.first]
 		else
 			@subject = nil
 		end

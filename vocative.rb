@@ -9,6 +9,6 @@ class Vocative
 	end
 
 	def analysis
-		@analysis = subsantive.analysis
+		@analysis = substantive.analysis
 	end
 end

@@ -5,7 +5,7 @@ class Substantive
 	include SubstantiveComponents
 
 	attr_reader :words
-	attr_reader :antecedent
+	attr_reader :parent
 
 	def initialize(original, options={})
 		@words = original
@@ -17,7 +17,13 @@ class Substantive
 	end
 
 	def head_and_complements
-		@head_and_complements = words
+		if negative?
+			@head_and_complements = [words.first] + words[2..-1]
+		elsif interrogative?
+			@head_and_complements = words[2..-1]
+		else
+			@head_and_complements = words
+		end
 	end
 
 	def has_complements?
@@ -39,7 +45,7 @@ class Substantive
 	end
 
 	def prepositional_complement_head
-		head_and_complements[after_head..-1].find { |word| PREPOSITIONS.include? word }
+		head_and_complements[1..-1].find { |word| PREPOSITIONS.include? word }
 	end
 
 	def final_complement_index
@@ -58,8 +64,8 @@ class Substantive
 		return @complements if defined? @complements
 		if has_complements?
 			@complements = []
-			unless final_complement_index == after_head
-				head_and_complements[after_head...final_complement_index].each { |w| add_complement [w] unless w == 'pi' }
+			unless final_complement_index == 1
+				head_and_complements[1...final_complement_index].each { |w| add_complement [w] unless w == 'pi' }
 			end
 			add_complement(head_and_complements[final_complement_index..-1].reject{|w| w=='pi'})
 		else
@@ -68,7 +74,7 @@ class Substantive
 	end
 
 	def add_complement(new_words)
-		@complements << new_component(new_words, antecedent: self)
+		@complements << new_component(new_words, parent: self)
 	end
 
 	# I'm thinking maybe it would make sense to merge together gerundive, p.o. and d.o. into 'object'
@@ -88,7 +94,7 @@ class Preverbal < Substantive
 	end
 
 	def gerundive
-		@gerundive ||= new_component words[1..-1]
+		@gerundive ||= new_component words[after_head..-1]
 	end
 
 	def analysis
@@ -105,7 +111,7 @@ class Prepositional < Substantive
 	end
 
 	def prepositional_object
-		@prepositional_object ||= new_component words[1..-1]
+		@prepositional_object ||= new_component words[after_head..-1]
 	end
 
 	def analysis
@@ -117,7 +123,8 @@ end
 
 class Transitive < Substantive
 	def head_and_complements
-		@head_and_complements ||= words[0...words.index('e')]
+		super
+		@head_and_complements = @head_and_complements[0...@head_and_complements.index('e')]
 	end
 
 	def direct_objects

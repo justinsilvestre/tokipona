@@ -15,12 +15,6 @@ describe Substantive do
 		end
 	end
 
-	describe '#antecedent' do
-		it 'gives substantive being modified if current substantive is complement' do
-			expect(@many_good_people.complements.first.antecedent).to be_a Substantive
-		end
-	end
-
 	describe '#direct_objects' do
 		it 'gives array of direct objects if present' do
 			expect(@compound_objects.direct_objects).to all(be_a Substantive)

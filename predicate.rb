@@ -15,7 +15,7 @@ class Predicate
 		@components = []
 		without_first_particle = words.first == modal_particle ? words[1..-1] : words
 		@components = without_first_particle.join(' ').split(" #{modal_particle} ").map do |component_text|
-			new_component component_text.split, is_predicate: true
+			new_component component_text.split
 		end
 	end
 

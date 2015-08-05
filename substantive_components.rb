@@ -1,44 +1,49 @@
 module SubstantiveComponents
 	def new_component(original, options={})
-		substantive_generator = SubstantiveGenerator.new original, options
+		substantive_generator = SubstantiveGenerator.new original, self
 		substantive_generator.generate
 	end
 
 	class SubstantiveGenerator
-		attr_reader :words, :options, :is_predicate
+		attr_reader :words, :parent
 
-		def initialize(original, original_options)
+		def initialize(original, origin)
 			@words = original
-			@options = original_options
-			options.each do |key, value|
-				eval("@#{key.to_s} = value")
-			end
+			@parent = origin
 		end
 
 		def generate
 			if preverbal?
-				Preverbal.new words, options
+				Preverbal.new words
 			elsif transitive?
-				Transitive.new words, options
+				Transitive.new words
 			elsif prepositional?
-				Prepositional.new words, options
+				Prepositional.new words
 			else
-				Substantive.new words, options
+				Substantive.new words
 			end
 		end
 
 		private
+
+			def predicate_parent?
+				defined? parent.modal_particle
+			end
+
+			def preverbal_parent?
+				defined? parent.gerundive
+			end
 
 			def simple?
 				words.length == 1
 			end
 
 			def preverbal?
-				!simple? and is_predicate and (PREVERBS.include? words.first) and words[1] != 'e'
+				!simple? and predicate_parent? and (PREVERBS.include? words.first) and (words[1] != 'e' && words[1..2] != %w'ala e' && words[0...3] != [words.first, 'ala', words.first])
 			end
 
 			def transitive?
-				is_predicate and !preverbal? and words.include?('e')
+				(predicate_parent? || preverbal_parent?) and !preverbal? and words.include?('e')
 			end
 
 			def prepositional?
