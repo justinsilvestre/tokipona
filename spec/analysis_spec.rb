@@ -14,6 +14,8 @@ describe 'the sentence-analyzing process', type: :feature do
 		@nimi = Sentence.new 'o nimi pi mi mute li kama suli!'
 		@negative = Sentence.new 'mi wile ala e ni.'
 		@kenla = Sentence.new 'ken la jan li ken moku e ona e ona weka telo kin.'
+		@lon_ala = Sentence.new 'sewi li lon ala!'
+		@wile_ala = Sentence.new 'mi mute li wile ala.'
 		prepare_substantives
 	end
 
@@ -108,6 +110,14 @@ describe 'the sentence-analyzing process', type: :feature do
 
 	it 'parses a transitive gerundive' do
 		expect(@kenla.predicate.components.first.gerundive.has_complements?).to eq false
+	end
+
+	it 'only creates prepositional object Substantive if p.o. is present' do
+		expect(defined? @lon_ala.predicate[0].prepositional_object).to be_nil
+	end
+
+	it 'only creates gerundive Substantive if gerundive is present' do
+		expect(defined? @wile.predicate[0].gerundive).to be_nil
 	end
 
 	it 'parses a compound predicate' do

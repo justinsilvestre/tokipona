@@ -30,4 +30,8 @@ class Subject
 		@analysis[:conjunction] = conjunction if conjunction
 		@analysis
 	end
+
+	def [](i)
+		components[i]
+	end
 end

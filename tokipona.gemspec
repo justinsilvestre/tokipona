@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'tokipona'
-  s.version     = '0.0.0'
+  s.version     = '0.0.1'
   s.date        = '2015-08-05'
   s.summary     = "A Toki Pona sentence-parser"
   s.description = "This is a tool for parsing sentences written in the minimalist constructed language Toki Pona."

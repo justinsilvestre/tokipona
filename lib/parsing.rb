@@ -40,4 +40,8 @@ class Parsing
 	def json
 		analysis.to_json
 	end
+
+	def [](i)
+		sentences[i]
+	end
 end

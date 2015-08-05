@@ -26,6 +26,20 @@ module SubstantiveComponents
 
 		private
 
+			def words_ignoring_head_polarity
+				return [words.first] + words[2..-1] if negative_head?
+				return words[2..-1] if interrogative_head?
+				words
+			end
+
+			def negative_head?
+				(words[1] == 'ala') && !interrogative_head?
+			end
+
+			def interrogative_head?
+				words[0...3] == [words.first, 'ala', words.first]
+			end
+
 			def predicate_parent?
 				defined? parent.modal_particle
 			end
@@ -35,11 +49,11 @@ module SubstantiveComponents
 			end
 
 			def simple?
-				words.length == 1
+				words_ignoring_head_polarity.length == 1
 			end
 
 			def preverbal?
-				!simple? and predicate_parent? and (PREVERBS.include? words.first) and (words[1] != 'e' && words[1..2] != %w'ala e' && words[0...3] != [words.first, 'ala', words.first])
+				!simple? and predicate_parent? and (PREVERBS.include? words.first) and (words_ignoring_head_polarity[1] != 'e')
 			end
 
 			def transitive?

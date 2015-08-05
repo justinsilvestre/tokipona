@@ -22,4 +22,8 @@ class Predicate
 	def analysis
 		@analysis = components.map &:analysis
 	end
+
+	def [](i)
+		components[i]
+	end
 end
