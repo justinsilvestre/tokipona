@@ -1,6 +1,5 @@
 require_relative 'clause'
 require_relative 'vocative'
-require_relative 'context'
 
 class Sentence
 	# remember to enforce proper capitalization
@@ -86,16 +85,21 @@ class Sentence
 		clause.mood
 	end
 
+	def taso
+		'taso' if formatted.match(/^taso/)
+	end
+
 	def analysis
 		@analysis = {}
 		@analysis[:vocative] = vocative.analysis if vocative
 		@analysis[:context] = context.analysis if context
-		@analysis[:subject] = subject.analysis if subject
-		@analysis[:predicate] = predicate.analysis
+		@analysis[:subject] = subject.analysis if clause && clause.subject
+		@analysis[:predicate] = predicate.analysis if clause
 		@analysis[:emphatic] = emphatic if emphatic
-		@analysis[:taso] = 'taso' if original_text.match(/^\s*taso/)
+		@analysis[:taso] = taso if taso
 		@analysis[:end_punctuation] = end_punctuation
-		@analysis[:mood] = mood
+		@analysis[:mood] = mood if mood
+		@analysis[:question_tag] = question_tag if question_tag
 		@analysis
 	end
 end

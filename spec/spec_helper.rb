@@ -1,5 +1,4 @@
-require_relative '../parsing'
-require 'yaml'
+require_relative '../lib/parsing'
 
 module Fixtures
 
@@ -11,6 +10,7 @@ module Fixtures
 		@vocative2 = Sentence.new('jan pona o, mi olin e sina.')
 		@context = Sentence.new('tenpo pini la mi lukin e suno')
 		@question_tag = Sentence.new('soweli li suli anu seme?')
+		@taso = Sentence.new('taso mi olin e ona. mi olin ala e sina.')
 	end
 
 	def prepare_clauses

@@ -45,4 +45,10 @@ describe Sentence do
 			expect(@question_tag.question_tag).to eq %w'anu seme'
 		end
 	end
+
+	describe '#taso' do
+		it 'gives initial taso if present in sentence' do
+			expect(@taso.taso).to eq 'taso'
+		end
+	end
 end
