@@ -31,7 +31,6 @@ module Fixtures
 		@preverbal = Preverbal.new %w'awen lukin e kon', is_predicate: true
 		@prepositional = Prepositional.new %w'lon supa noka mi'
 		@simple_substantive = Substantive.new %w'pona'
-		@very_good_big_person = Substantive.new %w'jan suli pi pona mute'
 	end
 
 	def heads(strings)
