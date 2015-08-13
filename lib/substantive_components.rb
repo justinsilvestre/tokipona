@@ -53,7 +53,7 @@ module SubstantiveComponents
 			end
 
 			def preverbal?
-				!simple? and predicate_parent? and (PREVERBS.include? words.first) and (words_ignoring_head_polarity[1] != 'e')
+				!simple? and predicate_parent? and (PREVERBS.include? words.first) and !(%w'e anu'.include? words_ignoring_head_polarity[1])
 			end
 
 			def transitive?
@@ -61,7 +61,7 @@ module SubstantiveComponents
 			end
 
 			def prepositional?
-				!simple? and !transitive? and (PREPOSITIONS.include? words.first)
+				!simple? and !transitive? and (PREPOSITIONS.include? words.first) and (words_ignoring_head_polarity[1] != 'anu')
 			end
 	end
 end

@@ -25,6 +25,7 @@ module Fixtures
 	def prepare_substantives
 		@many_good_people = Substantive.new %w'jan pona mute'
 		@very_good_person = Substantive.new %w'jan pi pona mute'
+		@very_good_big_person = Substantive.new %w'jan suli pi pona mute'
 		@person = Substantive.new %w'jan'
 		@transitive = Transitive.new %w'moku e telo', is_predicate: true
 		@compound_objects = Transitive.new %w'lukin e kasi e soweli lili', is_predicate: true
