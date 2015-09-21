@@ -21,7 +21,7 @@ describe 'the sentence-analyzing process', type: :feature do
 	end
 
 	it 'analyzes a simple vocative sentence' do
-		expect(@jan_mute.analysis).to eq({
+		expect(@jan_mute.tree).to eq({
 			vocative: {
 				head: 'jan', complements: [{head: 'mute'}]
 			},
@@ -47,7 +47,7 @@ describe 'the sentence-analyzing process', type: :feature do
 	end
 
 	it 'analyzes context with subject' do
-		expect(@snake.analysis[:context]).to eq(
+		expect(@snake.tree[:context]).to eq(
 			subject: { components: [{head: 'akesi'}] },
 			predicate: [{
 				head: 'toki',
@@ -59,7 +59,7 @@ describe 'the sentence-analyzing process', type: :feature do
 		)
 	end
 	it 'analyzes complex predicate' do
-		expect(@snake.analysis[:predicate]).to eq [{
+		expect(@snake.tree[:predicate]).to eq [{
 			head: 'pana',
 			negative: true,
 			complements: heads(%w'kin'),
@@ -108,11 +108,11 @@ describe 'the sentence-analyzing process', type: :feature do
 	end
 
 	it 'parses a simple predicate' do
-		expect(@kalama.predicate.analysis).to eq [{ head: 'kalama' }]
+		expect(@kalama.predicate.tree).to eq [{ head: 'kalama' }]
 	end
 
 	it 'parses a transitive predicate' do
-		expect(@ona_li.predicate.analysis).to eq([{
+		expect(@ona_li.predicate.tree).to eq([{
 			head: 'seli',
 			direct_objects: heads(%w'soweli pan')
 		}])
@@ -131,22 +131,22 @@ describe 'the sentence-analyzing process', type: :feature do
 	end
 
 	it 'parses a compound predicate' do
-		expect(@tenpo_ni.predicate.analysis).to eq [
+		expect(@tenpo_ni.predicate.tree).to eq [
 			{ head: 'kama', gerundive: { head: 'lon', prepositional_object: {head:'lupa'} } },
 			{ head: 'jo', direct_objects: [{ head: 'soweli', complements: heads(%w'lili tu') }] }
 		]
 	end
 
 	it 'parses a simple subject' do
-		expect(@sili.subject.analysis).to eq(components: [{head:'Sili'}])
+		expect(@sili.subject.tree).to eq(components: [{head:'Sili'}])
 	end
 
 	it 'parses a subject with complements' do
-		expect(@tenpo_ni.subject.analysis).to eq(components: [{head: 'jan', complements: heads(%w'Mawijo')}])
+		expect(@tenpo_ni.subject.tree).to eq(components: [{head: 'jan', complements: heads(%w'Mawijo')}])
 	end
 
 	it 'parses a whole sentence' do
-		expect(@ona_li.analysis).to eq(
+		expect(@ona_li.tree).to eq(
 			subject: { components: [{head:"ona"}] },
 			predicate: [{ head: "seli", direct_objects: heads(%w'soweli pan') }],
 			end_punctuation: ".",

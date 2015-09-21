@@ -1,26 +1,30 @@
 module SubstantiveComponents
 	def new_component(original, options={})
-		substantive_generator = SubstantiveGenerator.new original, self
+		substantive_generator = SubstantiveGenerator.new original, options
 		substantive_generator.generate
 	end
 
 	class SubstantiveGenerator
 		attr_reader :words, :parent
 
-		def initialize(original, origin)
+		def initialize(original, options={})
 			@words = original
-			@parent = origin
+			@options = default_options.merge(options)
+		end
+
+		def default_options
+			{ index_start: 0 }
 		end
 
 		def generate
 			if preverbal?
-				Preverbal.new words
+				Preverbal.new words, @options
 			elsif transitive?
-				Transitive.new words
+				Transitive.new words, @options
 			elsif prepositional?
-				Prepositional.new words
+				Prepositional.new words, @options
 			else
-				Substantive.new words
+				Substantive.new words, @options
 			end
 		end
 
@@ -41,11 +45,11 @@ module SubstantiveComponents
 			end
 
 			def predicate_parent?
-				defined? parent.modal_particle
+				@options[:role] == 'pred'
 			end
 
 			def preverbal_parent?
-				defined? parent.gerundive
+				@options[:role] == 'geru'
 			end
 
 			def simple?

@@ -27,9 +27,9 @@ module Fixtures
 		@very_good_person = Substantive.new %w'jan pi pona mute'
 		@very_good_big_person = Substantive.new %w'jan suli pi pona mute'
 		@person = Substantive.new %w'jan'
-		@transitive = Transitive.new %w'moku e telo', is_predicate: true
-		@compound_objects = Transitive.new %w'lukin e kasi e soweli lili', is_predicate: true
-		@preverbal = Preverbal.new %w'awen lukin e kon', is_predicate: true
+		@transitive = Transitive.new %w'moku e telo'
+		@compound_objects = Transitive.new %w'lukin e kasi e soweli lili'
+		@preverbal = Preverbal.new %w'awen lukin e kon'
 		@prepositional = Prepositional.new %w'lon supa noka mi'
 		@simple_substantive = Substantive.new %w'pona'
 	end

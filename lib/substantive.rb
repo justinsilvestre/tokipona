@@ -1,19 +1,26 @@
 require_relative 'word_classes'
 require_relative 'substantive_components'
+require_relative 'indexable'
 
 class Substantive
 	include SubstantiveComponents
+	include Indexable
 
 	attr_reader :words
-	attr_reader :parent
+	attr_reader :index_start
+	attr_reader :part_of_speech, :role
 
 	def initialize(original, options={})
 		@words = original
 
 		# for tracking relationships with other words in sentences
-		options.each do |key, value|
+		default_options.merge(options).each do |key, value|
 			eval("@#{key.to_s} = value")
 		end
+	end
+
+	def default_options
+		{ index_start: 0 }
 	end
 
 	def head_and_complements
@@ -65,25 +72,77 @@ class Substantive
 		if has_complements?
 			@complements = []
 			unless final_complement_index == 1
-				head_and_complements[1...final_complement_index].each { |w| add_complement [w] unless w == 'pi' }
+				head_and_complements[1...final_complement_index].each_with_index do |w, i|
+					add_complement([w], i) unless w == 'pi'
+				end
 			end
-			add_complement(head_and_complements[final_complement_index..-1].reject{|w| w=='pi'})
+			add_complement(head_and_complements[final_complement_index..-1].reject{|w| w=='pi'}, @complements.length)
 		else
 			@complements = nil
 		end
 	end
 
-	def add_complement(new_words)
-		@complements << new_component(new_words, parent: self)
+	def complement_index_start(complement_index)
+		total = index_start
+		@components.each do |component|
+ 			total += component.indices - 1
+		end
+		total
+	end
+
+	def add_complement(new_words, i)
+		new_index = index_start
+		if i == 0
+			new_index +=  1
+		else
+			@complements.each do |complement|
+				new_index += complement.indices
+			end
+		end
+		@complements << new_component(new_words, index_start: new_index, role: 'comp', pos: 'i')
 	end
 
 	# I'm thinking maybe it would make sense to merge together gerundive, p.o. and d.o. into 'object'
+	def tree
+		@tree = { head: words.first }
+		@tree[:interrogative] = true if interrogative?
+		@tree[:negative] = true if negative?
+		@tree[:complements] = complements.map(&:tree) if has_complements?
+		@tree
+	end
+
+	def pos
+		@part_of_speech = 'pro' if words.first == words.first.capitalize
+		@part_of_speech = 't' if defined? direct_objects
+		@part_of_speech = 'prev' if defined? gerundive
+		@part_of_speech = 'prep'if defined? prepositional_object
+		@part_of_speech ||= 'i'
+	end
+
+	def children
+		complements
+	end
+
 	def analysis
-		@analysis = { head: words.first }
+		@analysis = { word: words.first, pos: pos, role: role }
 		@analysis[:interrogative] = true if interrogative?
 		@analysis[:negative] = true if negative?
-		@analysis[:complements] = complements.map(&:analysis) if has_complements?
+		@analysis[:complements] = complements.map(&:index) if has_complements?
+		@analysis[:parent] = parent.index if parent
 		@analysis
+	end
+
+	def index
+		index_start
+	end
+
+	def indices
+		return 1 if !children
+		total = 1
+		children.each do |child|
+			total += child.indices
+		end
+		total
 	end
 end
 
@@ -94,13 +153,17 @@ class Preverbal < Substantive
 	end
 
 	def gerundive
-		@gerundive ||= new_component words[after_head..-1]
+		@gerundive ||= new_component(words[after_head..-1], index_start: index + 1, role: 'geru')
 	end
 
-	def analysis
+	def children
+		[ gerundive ]
+	end
+
+	def tree
 		super
-		@analysis[:gerundive] = gerundive.analysis
-		@analysis
+		@tree[:gerundive] = gerundive.tree
+		@tree
 	end
 end
 
@@ -111,13 +174,17 @@ class Prepositional < Substantive
 	end
 
 	def prepositional_object
-		@prepositional_object ||= new_component words[after_head..-1]
+		@prepositional_object ||= new_component(words[after_head..-1], index_start: index + 1, role: 'prob', pos: 'i')
 	end
 
-	def analysis
+	def children
+		[ prepositional_object ]
+	end
+
+	def tree
 		super
-		@analysis[:prepositional_object] = prepositional_object.analysis
-		@analysis
+		@tree[:prepositional_object] = prepositional_object.tree
+		@tree
 	end
 end
 
@@ -128,15 +195,34 @@ class Transitive < Substantive
 	end
 
 	def direct_objects
-		@direct_objects ||= words.join(' ').split(' e ')[1..-1].map do |object_string|
-			new_component(object_string.split)
+		@direct_objects = []
+		direct_object_strings = words.join(' ').split(' e ')[1..-1]
+		direct_object_strings.each do |object_string|
+			add_direct_object object_string.split, new_direct_object_index
 		end
+		@direct_objects
 	end
 
-	def analysis
+	def add_direct_object(words, index)
+		@direct_objects << new_component(words,
+			index_start: index, role: 'drob', pos: 'i')
+	end
+
+	def new_direct_object_index
+		complement_indices = has_complements? ? all_indices(complements) : 0
+		d_o_indices = @direct_objects ? all_indices(@direct_objects) : 0
+		index_start + 1 + complement_indices + d_o_indices
+	end
+
+	def children
+		return direct_objects unless has_complements?
+		direct_objects + complements
+	end
+
+	def tree
 		super
-		@analysis[:direct_objects] = direct_objects.map(&:analysis)
-		@analysis
+		@tree[:direct_objects] = direct_objects.map(&:tree)
+		@tree
 	end
 end
 

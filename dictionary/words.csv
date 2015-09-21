@@ -1,6 +1,6 @@
 a,p,x,"(emphasis, emotion or confirmation)"
 a,i,adv,indeed,too,also,even,really
-kin,i,alt,a
+kin,alt,a
 akesi,i,n,creature,reptile,amphibian,non-cute animal,vermin
 akesi,i,adj,creepy,slimy,scaly
 ala,i,adj,no,not,zero
@@ -82,6 +82,8 @@ kule,i,adj,colorful,pigmented,painted
 kule,i,n,color,paint
 kule,vt,color,paint
 kulupu,i,n,community,company,group,nation,society,tribe
+kulupu,i,vi,gather
+kulupu,i,dp,a group of,many
 kute,i,n,ear
 kute,t,vt,hear,listen,pay attention to,obey
 kute,i,adj,auditory
@@ -143,21 +145,21 @@ moli,i,adj,dead,dying,deadly,fatal
 moli,i,vi,die
 moli,t,vt,kill
 monsi,i,n,back,behind,rear
-mu,i,p,(animal noise or communication)
-mu,i,int,moo,meow,woof
+mu,i,int,moo,meow,woof,(animal noise or communication)
 mun,i,n,moon
 mun,i,adj,lunar,monthly
 musi,i,adj,artful,artistic,entertaining,frivolous,playful,recreational
 musi,i,n,fun,play,game,art,entertainment
 musi,i,vi,play,have fun
 mute,i,n,quantity
+mute,i,x,(marks plural)
 mute,i,dp,many,several,plenty
 mute,i,d,lots of,a lot of,more,much
 mute,i,pnp,many,several
 mute,i,pn,a lot,much
 mute,i,adv,much,very,really
 mute,i,adj,abundant,multiple,many,plenty
-mute,t,vt,multiply,
+mute,t,vt,multiply,increase
 nanpa,i,n,number
 nanpa,i,p,(signals ordinal number)
 nasa,i,adj,unusual,strange,foolish,crazy,drunk,intoxicated
@@ -170,7 +172,7 @@ ni,i,pnp,these,those
 nimi,i,n,name,word
 nimi,i,adj,verbal
 noka,i,n,foot,leg,bottom,lower part,organ of locomotion
-o,p,x(vocative or imperative)
+o,p,x,(vocative or imperative)
 o,p,interj,O
 olin,t,vt,love,have compassion for,respect,show affection to
 olin,i,n,love,compassion,respect,esteem
@@ -183,6 +185,7 @@ ona,i,adj,of his,of hers,of theirs
 ona,i,d,his,her,their,its
 open,t,vt,begin,start,open,turn on
 pakala,i,adj,botched,broken,damaged,harmed,messed up
+pakala,t,vt,botch,break,damage,mess up
 pali,t,vt,do,take action on,work on,build,make,prepare,create
 pali,i,vi,act,work,function,operate
 pali,i,adj,active
@@ -208,13 +211,14 @@ pona,t,vt,improve,fix,repair,better
 pona,clau,int,yay,hooray,hurrah
 pu,i,pn,the official Toki Pona book
 pu,i,vi,read the official Toki Pona book,interact with the official Toki Pona book
-sama,i,adj,same,similar,fellow,common
-sama,i,pno,each other,one another
+sama,i,adj,similar,fellow,common
+sama,i,pno,each other,one another,the same
+sama,d,the same
 sama,i,n,sibling,peer,fellow
 sama,prep,prep,as,like,such as,similar to,the same as
 seli,i,n,fire,light,cooking element,chemical reaction,heat source
 seli,t,vt,burn,cook,process
-seli,i,adj,hot,warm,cooked,
+seli,i,adj,hot,warm,cooked
 selo,i,n,outside (surface),outer form,outer layer,bark,peel,shell,skin,boundary,shape
 seme,i,pn,what,which
 sewi,i,n,area above,highest part,something elevated
@@ -231,7 +235,7 @@ sina,i,adj,of yours
 sinpin,i,n,face,foremost,front,wall
 sitelen,i,n,image,picture,representation,symbol,mark,writing
 sona,i,vt,know,know how (to),be skilled in,be wise about,have information on
-sona,i,n,knowledge,
+sona,i,n,knowledge,wisdom
 soweli,i,n,animal,beast,land mammal
 suli,i,adj,big,heavy,large,great,long,tall,important,adult
 suli,t,vt,enlarge,lengthen
@@ -258,6 +262,7 @@ telo,t,vt,water,wash,rinse,wet
 tenpo,i,n,time,duration,moment,occasion,period,situation
 toki,i,vi,communicate,say,speak,talk,use language,think
 toki,t,vt,say,speak
+toki,i,n,language,tongue,speech
 toki,pred,int,hello,hi
 tomo,i,n,building,indoor space,home,house,room
 tomo,i,adj,domestic,urban,household
@@ -281,4 +286,4 @@ weka,i,adj,absent,away
 weka,t,vt,ignore,remove,shun,repel
 wile,prev,vm,must,should,have to,wish to
 wile,t,vt,need,require,want,wish for
-wile,i,n,will (wish, desire)
+wile,i,n,"will (wish, desire)"

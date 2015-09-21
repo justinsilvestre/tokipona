@@ -5,10 +5,22 @@ class Vocative
 	end
 
 	def substantive
-		@substantive ||= Substantive.new(words[0..1])
+		@substantive ||= Substantive.new words[0..1], role: 'voc'
+	end
+
+	def indices
+		substantive.indices
+	end
+
+	def tree
+		@tree = substantive.tree
+	end
+
+	def index
+		0
 	end
 
 	def analysis
-		@analysis = substantive.analysis
+
 	end
 end

@@ -33,15 +33,15 @@ class Parsing
 		@sentences = @sentences.map { |s| Sentence.new s }
 	end
 
-	def analysis
-		@analysis ||= sentences.map(&:analysis)
-	end
-
-	def json
-		analysis.to_json
+	def tree
+		@tree ||= sentences.map(&:tree)
 	end
 
 	def [](i)
 		sentences[i]
+	end
+
+	def analysis
+		@analysis ||= sentences.map(&:analysis)
 	end
 end

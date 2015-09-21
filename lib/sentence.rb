@@ -1,5 +1,6 @@
 require_relative 'clause'
 require_relative 'vocative'
+require_relative 'word_classes'
 
 class Sentence
 	# remember to enforce proper capitalization
@@ -45,7 +46,7 @@ class Sentence
 		return @context if defined? @context
 		chunk = without_vocative_or_periphery
 		@context = chunk.include?('la') ?
-			Clause.new(chunk[0..chunk.index('la')]) : nil
+			Clause.new(chunk[0..chunk.index('la')], component_indices(vocative)) : nil
 	end
 
 	def question_tag
@@ -61,11 +62,11 @@ class Sentence
 	def clause
 		return @clause if defined? @clause
 		if !context.nil?
-			@clause = Clause.new without_vocative_or_periphery[without_periphery.index('la')+1..-1]
+			@clause = Clause.new(without_vocative_or_periphery[without_periphery.index('la')+1..-1], component_indices(context, vocative))
 		elsif without_vocative_or_periphery.empty?
 			@clause = nil
 		else
-			@clause = Clause.new without_vocative_or_periphery
+			@clause = Clause.new(without_vocative_or_periphery, component_indices(context, vocative))
 		end
 	end
 
@@ -93,17 +94,31 @@ class Sentence
 		'taso' if formatted.match(/^taso/)
 	end
 
+	def tree
+		@tree = {}
+		@tree[:vocative] = vocative.tree if vocative
+		@tree[:context] = context.tree if context
+		@tree[:subject] = subject.tree if clause && clause.subject
+		@tree[:predicate] = predicate.tree if clause
+		@tree[:emphatic] = emphatic if emphatic
+		@tree[:taso] = taso if taso
+		@tree[:end_punctuation] = end_punctuation
+		@tree[:mood] = mood if mood
+		@tree[:question_tag] = question_tag if question_tag
+		@tree
+	end
+
 	def analysis
-		@analysis = {}
-		@analysis[:vocative] = vocative.analysis if vocative
-		@analysis[:context] = context.analysis if context
-		@analysis[:subject] = subject.analysis if clause && clause.subject
-		@analysis[:predicate] = predicate.analysis if clause
-		@analysis[:emphatic] = emphatic if emphatic
-		@analysis[:taso] = taso if taso
-		@analysis[:end_punctuation] = end_punctuation
-		@analysis[:mood] = mood if mood
-		@analysis[:question_tag] = question_tag if question_tag
+		@analysis = []
+
 		@analysis
+	end
+
+	def component_indices(*components)
+		total = 0
+		components.each do |component|
+			total += component ? component.indices : 0
+		end
+		total
 	end
 end

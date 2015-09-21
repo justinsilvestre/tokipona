@@ -2,10 +2,14 @@ require_relative 'subject'
 require_relative 'predicate'
 
 class Clause
+	include Indexable
 
 	attr_accessor :words
-	def initialize(original, options={})
+	attr_accessor :index_start
+
+	def initialize(original, index_start=0)
 		self.words = original
+		@index_start = index_start
 	end
 
 	def is_context?
@@ -34,9 +38,9 @@ class Clause
 			i = words.index 'o'
 			@subject = i == 0 ? nil : Subject.new(words[0...i]) 
 		elsif words.include? 'li'
-			@subject = Subject.new words[0...words.index('li')]
+			@subject = Subject.new words[0...words.index('li')],  index_start
 		elsif %w'mi sina'.include? words.first
-			@subject = Subject.new [words.first]
+			@subject = Subject.new [words.first], index_start
 		else
 			@subject = nil
 		end
@@ -44,13 +48,24 @@ class Clause
 
 	def predicate
 		return @predicate if defined? @predicate
-		@predicate = Predicate.new words[initial_index..final_index], modal_particle
+		@predicate = Predicate.new words[initial_index..final_index], predicate_index
 	end
 
-	def analysis
-		@analysis = {}
-		@analysis[:subject] = subject.analysis if subject
-		@analysis[:predicate] = predicate.analysis
-		@analysis
+	def tree
+		@tree = {}
+		@tree[:subject] = subject.tree if subject
+		@tree[:predicate] = predicate.tree
+		@tree
 	end
+
+	private
+
+		def components
+			[subject, predicate].reject(&:nil?)
+		end
+
+		def predicate_index
+			shift = subject ? subject.indices : 1
+			return shift + index_start
+		end
 end
