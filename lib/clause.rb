@@ -36,11 +36,11 @@ class Clause
 		return @subject if defined? @subject
 		if words.include? 'o'
 			i = words.index 'o'
-			@subject = i == 0 ? nil : Subject.new(words[0...i]) 
+			@subject = i == 0 ? nil : new_subject(words[0...i])
 		elsif words.include? 'li'
-			@subject = Subject.new words[0...words.index('li')],  index_start
+			@subject = new_subject words[0...words.index('li')]
 		elsif %w'mi sina'.include? words.first
-			@subject = Subject.new [words.first], index_start
+			@subject = new_subject [words.first]
 		else
 			@subject = nil
 		end
@@ -48,7 +48,7 @@ class Clause
 
 	def predicate
 		return @predicate if defined? @predicate
-		@predicate = Predicate.new words[initial_index..final_index], predicate_index
+		@predicate = Predicate.new words[initial_index..final_index], predicate_index, is_context?
 	end
 
 	def tree
@@ -58,14 +58,23 @@ class Clause
 		@tree
 	end
 
+	def analysis
+		subject_analysis = subject ? subject.analysis : []
+		subject_analysis + predicate.analysis
+	end
+
 	private
 
 		def components
 			[subject, predicate].reject(&:nil?)
 		end
 
+		def new_subject(words)
+			Subject.new words, index_start, is_context?
+		end
+
 		def predicate_index
-			shift = subject ? subject.indices : 1
-			return shift + index_start
+			subject_indices = subject ? subject.indices : 0
+			return index_start + subject_indices
 		end
 end

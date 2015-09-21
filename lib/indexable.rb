@@ -8,8 +8,9 @@ module Indexable
 	end
 
 	def all_indices(components)
-		components.inject(0) { |total, component|
- 			total += component.indices
-		}
+		return 0 if components.empty?
+		components.inject(0) do |total, component|
+ 			total += component.indices 
+ 		end
 	end
 end

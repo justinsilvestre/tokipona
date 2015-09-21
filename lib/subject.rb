@@ -1,16 +1,17 @@
-require_relative 'substantive'
 require_relative 'word_classes'
 require_relative 'indexable'
+require_relative 'substantive'
 
 class Subject
 	include SubstantiveComponents
 	include Indexable
 
-	attr_accessor :words, :index_start
+	attr_accessor :words, :index_start, :in_context
 
-	def initialize(original, index_start=0)
-		self.words = original
-		self.index_start = index_start
+	def initialize(original, index_start=0, in_context=false)
+		@words = original
+		@index_start = index_start
+		@in_context = in_context
 	end
 
 	def conjunctions
@@ -25,22 +26,47 @@ class Subject
 			component_strings = words.join(' ').split(Regexp.union CONJUNCTIONS)
 			component_strings.each do |component_string|
 				@components << new_component(component_string.split,
-					role: 'subj', index_start: all_indices(@components) + index_start)
+					role: role, index_start: all_indices(@components) + index_start)
 			end
 		else
-			@components = [new_component(words, role: subj, index_start: index_start)]
+			@components = [new_component(words, role: role, index_start: index_start)]
 		end
 		@components
+	end
+
+	def role
+		in_context ? 'csub' : 'subj'
 	end
 
 	def tree
 		@tree = {}
 		@tree[:components] = components.map(&:tree)
-		@tree[:conjunctions] = conjunctions if conjunctions.any?
+		@tree[:conjunctiZons] = conjunctions if conjunctions.any?
 		@tree
 	end
 
 	def [](i)
 		components[i]
+	end
+
+	def analysis
+		@analysis = components.map.with_index do |component, i|
+			particle_info = i > 0 ? { particle: conjunctions[i-1] } : {}
+			component.analysis.first.merge(particle_info)
+		end
+	end
+
+	def analysis
+		head_analyses_with_particles = components.map.with_index do |component, i|
+			particle_info = i > 0 ? { particle: conjunctions[i-1] } : {}
+			component.analysis.merge particle_info	
+		end
+		i = 0
+		head_analyses_with_particles.inject([]) do |pre, nex|
+			complement_analyses = components[i].has_complements? ? components[i].complements.map(&:analysis) : []
+			r = pre + [ nex ] + complement_analyses + components[i].object_analyses
+			i += 1
+			r
+		end
 	end
 end

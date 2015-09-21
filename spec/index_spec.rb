@@ -10,6 +10,8 @@ describe 'Indexable' do
 		@many_good = Substantive.new %w'jan pona mute'
 		@compound_subject = Sentence.new 'mi mute en sina mute en ona mute li jan pona mute'
 		@comp_sen = Sentence.new 'mi jo e kili lili'
+		@tenpo_ni_la = Sentence.new 'tenpo ni la mi kama sona e mije'
+		@jan_ali_o = Sentence.new 'jan ali o, o kama!'
 	end
 	
 	it 'gives indices for Substantive with complements' do
@@ -83,5 +85,14 @@ describe 'Indexable' do
 
 	it 'gives correct index for prepositional objects' do
 		expect(Sentence.new('mi lon ali').predicate[0].prepositional_object.index).to eq(2)
+	end
+
+	it 'gives correct index after context' do
+		expect(@tenpo_ni_la.subject[0].index).to eq(2)
+		expect(@tenpo_ni_la.predicate[0].index).to eq(3)
+	end
+
+	it 'gives correct index after vocative' do
+		expect(@jan_ali_o.predicate[0].index).to eq(2)
 	end
 end

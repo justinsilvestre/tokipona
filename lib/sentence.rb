@@ -3,6 +3,8 @@ require_relative 'vocative'
 require_relative 'word_classes'
 
 class Sentence
+	include Indexable
+
 	# remember to enforce proper capitalization
 	attr_reader :original_text
 	attr_accessor :words
@@ -66,7 +68,7 @@ class Sentence
 		elsif without_vocative_or_periphery.empty?
 			@clause = nil
 		else
-			@clause = Clause.new(without_vocative_or_periphery, component_indices(context, vocative))
+			@clause = Clause.new without_vocative_or_periphery, component_indices(context, vocative)
 		end
 	end
 
@@ -109,16 +111,19 @@ class Sentence
 	end
 
 	def analysis
-		@analysis = []
-
+		vocative_analysis = vocative ? vocative.analysis : []
+		context_analysis = context ? context.analysis : []
+		clause_analysis = clause ? clause.analysis : []
+		substantives = vocative_analysis + context_analysis + clause_analysis
+		@analysis = { substantives: substantives, end_punctuation: end_punctuation }
+		@analysis = @analysis.merge(taso: true) if taso
+		@analysis = @anlysis.merge(emphatic: emphatic) if emphatic
+		@analysis = @analysis.merge(question_tag: true) if question_tag
 		@analysis
 	end
 
 	def component_indices(*components)
-		total = 0
-		components.each do |component|
-			total += component ? component.indices : 0
-		end
-		total
+		actual_components = components.reject(&:nil?)
+		all_indices actual_components
 	end
 end

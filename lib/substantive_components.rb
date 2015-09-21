@@ -5,7 +5,7 @@ module SubstantiveComponents
 	end
 
 	class SubstantiveGenerator
-		attr_reader :words, :parent
+		attr_reader :words
 
 		def initialize(original, options={})
 			@words = original
@@ -18,13 +18,13 @@ module SubstantiveComponents
 
 		def generate
 			if preverbal?
-				Preverbal.new words, @options
+				Preverbal.new words, @options.merge(pos: 'prev')
 			elsif transitive?
-				Transitive.new words, @options
+				Transitive.new words, @options.merge(pos: 't')
 			elsif prepositional?
-				Prepositional.new words, @options
+				Prepositional.new words, @options.merge(pos: 'prep')
 			else
-				Substantive.new words, @options
+				Substantive.new words, @options.merge(pos: (words.first == words.first.capitalize ? 'pro' : 'i'))
 			end
 		end
 
@@ -45,7 +45,7 @@ module SubstantiveComponents
 			end
 
 			def predicate_parent?
-				@options[:role] == 'pred'
+				%w'pred cpre'.include? @options[:role]
 			end
 
 			def preverbal_parent?
