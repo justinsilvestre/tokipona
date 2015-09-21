@@ -21,8 +21,9 @@ class Predicate
 	def components
 		return @components if defined? @components
 		@components = []
-		component_strings.each do |component_string|
-			@components << new_component(component_string.strip.split, role: in_context ? 'cpre' : 'pred', index_start: new_component_index)
+		component_strings.each_with_index do |component_string, i|
+			component_options = { role: in_context ? 'cpre' : 'pred', index_start: new_component_index }.merge(particle_info(i))
+			@components << new_component(component_string.strip.split, component_options )
 		end
 		@components
 	end
@@ -52,15 +53,8 @@ class Predicate
 	end
 
 	def analysis
-		head_analyses_with_particles = components.map.with_index do |component, i|
-			component.analysis.merge particle_info(i)
-		end
-		i = 0
-		head_analyses_with_particles.inject([]) do |pre, nex|
-			complement_analyses = components[i].has_complements? ? components[i].complements.map(&:analysis) : []
-			r = pre + [ nex ] + complement_analyses + components[i].object_analyses
-			i += 1
-			r
+		components.inject([]) do |analyses, component|
+			analyses + component.analyses_with_children
 		end
 	end
 

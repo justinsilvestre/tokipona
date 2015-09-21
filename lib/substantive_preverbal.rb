@@ -16,8 +16,4 @@ class Preverbal < Substantive
 		@tree[:gerundive] = gerundive.tree
 		@tree
 	end
-
-	def analysis
-		super.merge(objects: children.map(&:index))
-	end
 end

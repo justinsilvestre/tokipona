@@ -41,7 +41,7 @@ class Subject
 	def tree
 		@tree = {}
 		@tree[:components] = components.map(&:tree)
-		@tree[:conjunctiZons] = conjunctions if conjunctions.any?
+		@tree[:conjunctions] = conjunctions if conjunctions.any?
 		@tree
 	end
 
@@ -57,16 +57,8 @@ class Subject
 	end
 
 	def analysis
-		head_analyses_with_particles = components.map.with_index do |component, i|
-			particle_info = i > 0 ? { particle: conjunctions[i-1] } : {}
-			component.analysis.merge particle_info	
-		end
-		i = 0
-		head_analyses_with_particles.inject([]) do |pre, nex|
-			complement_analyses = components[i].has_complements? ? components[i].complements.map(&:analysis) : []
-			r = pre + [ nex ] + complement_analyses + components[i].object_analyses
-			i += 1
-			r
+		components.inject([]) do |analyses, component|
+			analyses + component.analyses_with_children
 		end
 	end
 end

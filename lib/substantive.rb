@@ -7,7 +7,7 @@ class Substantive
 	include Indexable
 
 	attr_reader :words
-	attr_reader :index_start, :parent
+	attr_reader :index_start, :parent, :particle
 	attr_reader :pos, :role
 
 	def initialize(original, options={})
@@ -106,6 +106,7 @@ class Substantive
 
 	def analysis
 		@analysis = { word: words.first, pos: pos, role: role }
+		@analysis[:particle] = particle if particle
 		@analysis[:interrogative] = true if interrogative?
 		@analysis[:negative] = true if negative?
 		@analysis[:complements] = complements.map(&:index) if has_complements?
@@ -130,16 +131,10 @@ class Substantive
 		total
 	end
 
-	def object_analyses
-		case pos
-		when 't'
-			direct_objects.map(&:analysis)
-		when 'prev'
-			[ gerundive.analysis ]
-		when 'prep'
-			[ prepositional_object.analysis ]
-		else
-			[]
+	def analyses_with_children
+		return [analysis] unless children
+		[analysis] + children.inject([]) do |analyses, child|
+			analyses + child.analyses_with_children
 		end
 	end
 end

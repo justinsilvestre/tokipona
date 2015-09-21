@@ -21,6 +21,6 @@ class Vocative
 	end
 
 	def analysis
-
+		substantive.analyses_with_children
 	end
 end

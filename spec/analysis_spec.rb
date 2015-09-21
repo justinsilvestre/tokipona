@@ -7,6 +7,17 @@ describe 'analysis', type: :feature do
 		@wile = Sentence.new('mi wile lon ma pona').analysis
 		@lon = Sentence.new('ona li lon ma pona').analysis
 		@mute = Sentence.new('mi mute mute li pona mute').analysis
+		@sewi = Sentence.new('tan ma tomo Pape la, sewi Jawe li tawa e jan tawa ma mute').analysis
+	end
+
+	it "analyzes complements of direct objects" do
+		expect(@sewi[:substantives][6]).to eq(
+			word: 'tawa',
+			pos: 't',
+			role: 'pred',
+			objects: [7],
+			particle: 'li'
+		)
 	end
 
 	it "analyzes a subject head" do
@@ -66,7 +77,6 @@ describe 'analysis', type: :feature do
 			role: 'pred',
 			word: 'wile',
 			pos: 'prev',
-			objects: [2]
 		)
 	end
 
@@ -75,7 +85,6 @@ describe 'analysis', type: :feature do
 			role: 'pred',
 			word: 'lon',
 			pos: 'prep',
-			objects: [2],
 			particle: 'li'
 		)
 	end
@@ -99,5 +108,4 @@ describe 'analysis', type: :feature do
 		expect(@mute[:substantives][1]).to eq(mute_analysis)
 		expect(@mute[:substantives][2]).to eq(mute_analysis)
 	end
-
 end

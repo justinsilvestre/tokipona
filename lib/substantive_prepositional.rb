@@ -16,8 +16,4 @@ class Prepositional < Substantive
 		@tree[:prepositional_object] = prepositional_object.tree
 		@tree
 	end
-
-	def analysis
-		super.merge(objects: children.map(&:index))
-	end
 end
