@@ -117,7 +117,7 @@ class Sentence
 		substantives = vocative_analysis + context_analysis + clause_analysis
 		@analysis = { substantives: substantives, end_punctuation: end_punctuation }
 		@analysis = @analysis.merge(taso: true) if taso
-		@analysis = @anlysis.merge(emphatic: emphatic) if emphatic
+		@analysis = @analysis.merge(emphatic: emphatic) if emphatic
 		@analysis = @analysis.merge(question_tag: true) if question_tag
 		@analysis
 	end
